@@ -1,0 +1,68 @@
+{
+  "name": "ethos-ts-sdk",
+  "version": "0.1.0",
+  "description": "Unofficial TypeScript SDK for Ethos Network API",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint src tests",
+    "lint:fix": "eslint src tests --fix",
+    "typecheck": "tsc --noEmit",
+    "format": "prettier --write src tests",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "ethos",
+    "ethos-network",
+    "web3",
+    "reputation",
+    "blockchain",
+    "api",
+    "sdk",
+    "typescript"
+  ],
+  "author": "onetrillionx",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/onetrillionx/ethos-ts-sdk.git"
+  },
+  "bugs": {
+    "url": "https://github.com/onetrillionx/ethos-ts-sdk/issues"
+  },
+  "homepage": "https://github.com/onetrillionx/ethos-ts-sdk#readme",
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0",
+    "@vitest/coverage-v8": "^1.0.0",
+    "eslint": "^8.55.0",
+    "msw": "^2.0.0",
+    "prettier": "^3.1.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.3.0",
+    "vitest": "^1.0.0"
+  },
+  "dependencies": {
+    "zod": "^3.22.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
