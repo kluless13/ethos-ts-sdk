@@ -47,9 +47,9 @@ describe('Vouches', () => {
 
   describe('list', () => {
     it('should iterate through vouches', async () => {
-      vi.spyOn(mockHttp, 'get')
-        .mockResolvedValueOnce({ data: [mockVouchData] })
-        .mockResolvedValueOnce({ data: [] });
+      vi.spyOn(mockHttp, 'post')
+        .mockResolvedValueOnce({ values: [mockVouchData], total: 1 })
+        .mockResolvedValueOnce({ values: [], total: 0 });
 
       const results: Vouch[] = [];
       for await (const vouch of vouches.list({ limit: 1 })) {
@@ -61,7 +61,7 @@ describe('Vouches', () => {
     });
 
     it('should pass filter parameters', async () => {
-      vi.spyOn(mockHttp, 'get').mockResolvedValue({ data: [] });
+      vi.spyOn(mockHttp, 'post').mockResolvedValue({ values: [], total: 0 });
 
       for await (const _ of vouches.list({
         authorProfileId: 100,
@@ -72,11 +72,11 @@ describe('Vouches', () => {
         // consume
       }
 
-      expect(mockHttp.get).toHaveBeenCalledWith(
+      expect(mockHttp.post).toHaveBeenCalledWith(
         '/vouches',
         expect.objectContaining({
-          authorProfileId: 100,
-          subjectProfileId: 200,
+          authorProfileIds: [100],
+          subjectProfileIds: [200],
           staked: true,
           archived: false,
         })
@@ -86,9 +86,9 @@ describe('Vouches', () => {
 
   describe('listAll', () => {
     it('should collect all vouches into array', async () => {
-      vi.spyOn(mockHttp, 'get')
-        .mockResolvedValueOnce({ data: [mockVouchData] })
-        .mockResolvedValueOnce({ data: [] });
+      vi.spyOn(mockHttp, 'post')
+        .mockResolvedValueOnce({ values: [mockVouchData], total: 1 })
+        .mockResolvedValueOnce({ values: [], total: 0 });
 
       const results = await vouches.listAll({ limit: 1 });
 
@@ -98,15 +98,15 @@ describe('Vouches', () => {
 
   describe('forProfile', () => {
     it('should get vouches received by profile', async () => {
-      vi.spyOn(mockHttp, 'get')
-        .mockResolvedValueOnce({ data: [mockVouchData] })
-        .mockResolvedValueOnce({ data: [] });
+      vi.spyOn(mockHttp, 'post')
+        .mockResolvedValueOnce({ values: [mockVouchData], total: 1 })
+        .mockResolvedValueOnce({ values: [], total: 0 });
 
       const results = await vouches.forProfile(200);
 
-      expect(mockHttp.get).toHaveBeenCalledWith(
+      expect(mockHttp.post).toHaveBeenCalledWith(
         '/vouches',
-        expect.objectContaining({ subjectProfileId: 200 })
+        expect.objectContaining({ subjectProfileIds: [200] })
       );
       expect(results).toHaveLength(1);
     });
@@ -114,15 +114,15 @@ describe('Vouches', () => {
 
   describe('byProfile', () => {
     it('should get vouches given by profile', async () => {
-      vi.spyOn(mockHttp, 'get')
-        .mockResolvedValueOnce({ data: [mockVouchData] })
-        .mockResolvedValueOnce({ data: [] });
+      vi.spyOn(mockHttp, 'post')
+        .mockResolvedValueOnce({ values: [mockVouchData], total: 1 })
+        .mockResolvedValueOnce({ values: [], total: 0 });
 
       const results = await vouches.byProfile(100);
 
-      expect(mockHttp.get).toHaveBeenCalledWith(
+      expect(mockHttp.post).toHaveBeenCalledWith(
         '/vouches',
-        expect.objectContaining({ authorProfileId: 100 })
+        expect.objectContaining({ authorProfileIds: [100] })
       );
       expect(results).toHaveLength(1);
     });
@@ -130,22 +130,22 @@ describe('Vouches', () => {
 
   describe('between', () => {
     it('should return vouch between two profiles', async () => {
-      vi.spyOn(mockHttp, 'get').mockResolvedValue({ data: [mockVouchData] });
+      vi.spyOn(mockHttp, 'post').mockResolvedValue({ values: [mockVouchData], total: 1 });
 
       const result = await vouches.between(100, 200);
 
-      expect(mockHttp.get).toHaveBeenCalledWith(
+      expect(mockHttp.post).toHaveBeenCalledWith(
         '/vouches',
         expect.objectContaining({
-          authorProfileId: 100,
-          subjectProfileId: 200,
+          authorProfileIds: [100],
+          subjectProfileIds: [200],
         })
       );
       expect(result).toBeInstanceOf(Vouch);
     });
 
     it('should return null when no vouch exists', async () => {
-      vi.spyOn(mockHttp, 'get').mockResolvedValue({ data: [] });
+      vi.spyOn(mockHttp, 'post').mockResolvedValue({ values: [], total: 0 });
 
       const result = await vouches.between(100, 200);
 

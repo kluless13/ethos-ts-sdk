@@ -98,7 +98,10 @@ export class HTTPClient {
    * Build URL with query parameters.
    */
   private buildUrl(path: string, params?: Record<string, unknown>): string {
-    const url = new URL(path, this.config.baseUrl);
+    // Ensure baseUrl ends without trailing slash and path starts with /
+    const base = this.config.baseUrl.replace(/\/$/, '');
+    const cleanPath = path.startsWith('/') ? path : `/${path}`;
+    const url = new URL(`${base}${cleanPath}`);
 
     if (params) {
       for (const [key, value] of Object.entries(params)) {

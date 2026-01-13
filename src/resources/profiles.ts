@@ -3,7 +3,7 @@
  */
 
 import { HTTPClient } from '../http';
-import { Profile, ProfileData } from '../types/profile';
+import { Profile, ProfileData, GlobalProfileStats } from '../types/profile';
 import { BaseResource } from './base';
 
 export interface ProfilesListParams {
@@ -57,10 +57,7 @@ export class Profiles extends BaseResource<Profile, ProfileData> {
    */
   async getByTwitter(handle: string): Promise<Profile> {
     const cleanHandle = handle.replace(/^@/, '');
-    const userkey = `x.com/user/${cleanHandle}`;
-    const data = await this.http.get<ProfileData>(
-      `${this.path}/userkey/${encodeURIComponent(userkey)}`
-    );
+    const data = await this.http.get<ProfileData>(`/user/by/x/${cleanHandle}`);
     return this.parseItem(data);
   }
 
@@ -114,5 +111,12 @@ export class Profiles extends BaseResource<Profile, ProfileData> {
     });
     const items = this.extractItems(response);
     return this.parseList(items);
+  }
+
+  /**
+   * Get global profile statistics.
+   */
+  async stats(): Promise<GlobalProfileStats> {
+    return this.http.get<GlobalProfileStats>(`${this.path}/stats`);
   }
 }

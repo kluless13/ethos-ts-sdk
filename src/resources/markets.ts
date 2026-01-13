@@ -8,7 +8,6 @@ import { BaseResource } from './base';
 
 export interface MarketsListParams {
   isActive?: boolean;
-  orderBy?: string;
   limit?: number;
 }
 
@@ -55,9 +54,6 @@ export class Markets extends BaseResource<Market, MarketData> {
     if (params.isActive !== undefined) {
       queryParams['isActive'] = params.isActive;
     }
-    if (params.orderBy !== undefined) {
-      queryParams['orderBy'] = params.orderBy;
-    }
 
     yield* this.paginate(this.path, queryParams, params.limit ?? 100);
   }
@@ -71,9 +67,10 @@ export class Markets extends BaseResource<Market, MarketData> {
 
   /**
    * Get top markets by trading volume.
+   * Note: Fetches all markets and sorts client-side.
    */
   async topByVolume(limit = 20): Promise<Market[]> {
-    const markets = await this.listAll({ orderBy: 'totalVolume', limit });
+    const markets = await this.listAll();
     return markets
       .sort((a, b) => b.totalVolume - a.totalVolume)
       .slice(0, limit);
@@ -81,17 +78,19 @@ export class Markets extends BaseResource<Market, MarketData> {
 
   /**
    * Get markets with highest trust prices.
+   * Note: Fetches all markets and sorts client-side.
    */
   async mostTrusted(limit = 20): Promise<Market[]> {
-    const markets = await this.listAll({ limit: limit * 2 });
+    const markets = await this.listAll();
     return markets.sort((a, b) => b.trustPrice - a.trustPrice).slice(0, limit);
   }
 
   /**
    * Get markets with highest distrust prices.
+   * Note: Fetches all markets and sorts client-side.
    */
   async mostDistrusted(limit = 20): Promise<Market[]> {
-    const markets = await this.listAll({ limit: limit * 2 });
+    const markets = await this.listAll();
     return markets
       .sort((a, b) => b.distrustPrice - a.distrustPrice)
       .slice(0, limit);

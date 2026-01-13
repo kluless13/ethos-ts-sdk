@@ -2,9 +2,19 @@
  * Market types for Ethos reputation markets.
  */
 
+/**
+ * User info embedded in market data from API.
+ */
+export interface MarketUserData {
+  profileId: number;
+  username?: string;
+  score?: number;
+}
+
 export interface MarketData {
   id: number;
-  profileId: number;
+  profileId?: number;
+  user?: MarketUserData;
   trustVotes: number;
   distrustVotes: number;
   trustPrice: number;
@@ -26,6 +36,8 @@ export interface MarketData {
 export class Market {
   readonly id: number;
   readonly profileId: number;
+  readonly username?: string;
+  readonly userScore?: number;
   readonly trustVotes: number;
   readonly distrustVotes: number;
   readonly trustPrice: number;
@@ -38,7 +50,10 @@ export class Market {
 
   constructor(data: MarketData) {
     this.id = data.id;
-    this.profileId = data.profileId;
+    // Extract profileId from either top-level or nested user object
+    this.profileId = data.profileId ?? data.user?.profileId ?? data.id;
+    this.username = data.user?.username;
+    this.userScore = data.user?.score;
     this.trustVotes = data.trustVotes ?? 0;
     this.distrustVotes = data.distrustVotes ?? 0;
     this.trustPrice = data.trustPrice ?? 0.5;
@@ -89,6 +104,13 @@ export class Market {
     return {
       id: this.id,
       profileId: this.profileId,
+      user: this.username
+        ? {
+            profileId: this.profileId,
+            username: this.username,
+            score: this.userScore,
+          }
+        : undefined,
       trustVotes: this.trustVotes,
       distrustVotes: this.distrustVotes,
       trustPrice: this.trustPrice,

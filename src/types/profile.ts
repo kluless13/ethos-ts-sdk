@@ -32,6 +32,14 @@ export interface ProfileStats {
   vouch: ProfileStatsVouch;
 }
 
+/**
+ * Global profile statistics from /profiles/stats endpoint.
+ */
+export interface GlobalProfileStats {
+  activeProfiles: number;
+  invitesAvailable: number;
+}
+
 export interface ProfileLinks {
   profile?: string;
   scoreBreakdown?: string;

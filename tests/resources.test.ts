@@ -55,7 +55,7 @@ describe('Resources', () => {
 
       const profile = await profiles.getByTwitter('@testuser');
 
-      expect(http.get).toHaveBeenCalledWith('/profiles/userkey/x.com%2Fuser%2Ftestuser');
+      expect(http.get).toHaveBeenCalledWith('/user/by/x/testuser');
     });
 
     it('should search profiles', async () => {
@@ -88,8 +88,8 @@ describe('Resources', () => {
     });
 
     it('should get vouches for profile', async () => {
-      const mockData = [{ id: 1, authorProfileId: 10, subjectProfileId: 20, staked: true, archived: false, unhealthy: false, balance: '0', activityCheckpoints: {} }];
-      vi.spyOn(http, 'get').mockResolvedValueOnce(mockData).mockResolvedValueOnce([]);
+      const mockData = { values: [{ id: 1, authorProfileId: 10, subjectProfileId: 20, staked: true, archived: false, unhealthy: false, balance: '0', activityCheckpoints: {} }], total: 1 };
+      vi.spyOn(http, 'post').mockResolvedValueOnce(mockData).mockResolvedValueOnce({ values: [], total: 0 });
 
       const results = await vouches.forProfile(20);
 
@@ -97,8 +97,8 @@ describe('Resources', () => {
     });
 
     it('should check vouch between profiles', async () => {
-      const mockData = [{ id: 1, authorProfileId: 10, subjectProfileId: 20, staked: true, archived: false, unhealthy: false, balance: '0', activityCheckpoints: {} }];
-      vi.spyOn(http, 'get').mockResolvedValueOnce(mockData);
+      const mockData = { values: [{ id: 1, authorProfileId: 10, subjectProfileId: 20, staked: true, archived: false, unhealthy: false, balance: '0', activityCheckpoints: {} }], total: 1 };
+      vi.spyOn(http, 'post').mockResolvedValueOnce(mockData);
 
       const vouch = await vouches.between(10, 20);
 
@@ -106,7 +106,7 @@ describe('Resources', () => {
     });
 
     it('should return null when no vouch between profiles', async () => {
-      vi.spyOn(http, 'get').mockResolvedValueOnce([]);
+      vi.spyOn(http, 'post').mockResolvedValueOnce({ values: [], total: 0 });
 
       const vouch = await vouches.between(10, 20);
 

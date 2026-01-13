@@ -74,9 +74,7 @@ describe('Profiles', () => {
 
       const result = await profiles.getByTwitter('testuser');
 
-      expect(mockHttp.get).toHaveBeenCalledWith(
-        '/profiles/userkey/x.com%2Fuser%2Ftestuser'
-      );
+      expect(mockHttp.get).toHaveBeenCalledWith('/user/by/x/testuser');
       expect(result).toBeInstanceOf(Profile);
     });
 
@@ -85,9 +83,7 @@ describe('Profiles', () => {
 
       await profiles.getByTwitter('@testuser');
 
-      expect(mockHttp.get).toHaveBeenCalledWith(
-        '/profiles/userkey/x.com%2Fuser%2Ftestuser'
-      );
+      expect(mockHttp.get).toHaveBeenCalledWith('/user/by/x/testuser');
     });
   });
 

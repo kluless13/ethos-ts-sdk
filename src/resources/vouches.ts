@@ -14,6 +14,20 @@ export interface VouchesListParams {
   limit?: number;
 }
 
+interface VouchesQueryBody {
+  authorProfileIds?: number[];
+  subjectProfileIds?: number[];
+  staked?: boolean;
+  archived?: boolean;
+  limit: number;
+  offset: number;
+}
+
+interface VouchesQueryResponse {
+  total: number;
+  values: VouchData[];
+}
+
 /**
  * Vouches API resource.
  *
@@ -39,25 +53,53 @@ export class Vouches extends BaseResource<Vouch, VouchData> {
   }
 
   /**
+   * Query vouches using POST endpoint with body parameters.
+   */
+  private async query(body: VouchesQueryBody): Promise<VouchesQueryResponse> {
+    return this.http.post<VouchesQueryResponse>(this.path, body);
+  }
+
+  /**
    * Async generator for listing vouches with optional filtering.
+   * Uses POST /vouches with body parameters.
    */
   async *list(params: VouchesListParams = {}): AsyncGenerator<Vouch> {
-    const queryParams: Record<string, unknown> = {};
+    const limit = params.limit ?? 100;
+    let offset = 0;
 
-    if (params.authorProfileId !== undefined) {
-      queryParams['authorProfileId'] = params.authorProfileId;
-    }
-    if (params.targetProfileId !== undefined) {
-      queryParams['subjectProfileId'] = params.targetProfileId;
-    }
-    if (params.staked !== undefined) {
-      queryParams['staked'] = params.staked;
-    }
-    if (params.archived !== undefined) {
-      queryParams['archived'] = params.archived;
-    }
+    while (true) {
+      const body: VouchesQueryBody = { limit, offset };
 
-    yield* this.paginate(this.path, queryParams, params.limit ?? 100);
+      if (params.authorProfileId !== undefined) {
+        body.authorProfileIds = [params.authorProfileId];
+      }
+      if (params.targetProfileId !== undefined) {
+        body.subjectProfileIds = [params.targetProfileId];
+      }
+      if (params.staked !== undefined) {
+        body.staked = params.staked;
+      }
+      if (params.archived !== undefined) {
+        body.archived = params.archived;
+      }
+
+      const response = await this.query(body);
+      const items = response.values ?? [];
+
+      if (items.length === 0) {
+        break;
+      }
+
+      for (const item of items) {
+        yield this.parseItem(item);
+      }
+
+      if (items.length < limit) {
+        break;
+      }
+
+      offset += limit;
+    }
   }
 
   /**

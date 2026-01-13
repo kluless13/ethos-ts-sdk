@@ -76,7 +76,6 @@ describe('Markets', () => {
 
       for await (const _ of markets.list({
         isActive: true,
-        orderBy: 'totalVolume',
       })) {
         // consume
       }
@@ -85,7 +84,6 @@ describe('Markets', () => {
         '/markets',
         expect.objectContaining({
           isActive: true,
-          orderBy: 'totalVolume',
         })
       );
     });
